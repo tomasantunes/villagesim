@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillageSim</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <style>
+        .form1 {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+    </style>
 </head>
 <body>
     <h1>Home</h1>
@@ -15,25 +23,32 @@
             <th>Daily Growth</th>
             <th>Quantity</th>
         </tr>
+        {% for product in products %}
         <tr>
-            <td>Bread</td>
-            <td>0.10</td>
-            <td>100</td>
-            <td>100</td>
+            <td>{{ product[1] }}</td>
+            <td>{{ product[2] }}</td>
+            <td>{{ product[3] }}</td>
+            <td>{{ product[4] }}</td>
         </tr>
-        <tr>
-            <td>Rice</td>
-            <td>1.00</td>
-            <td>50</td>
-            <td>50</td>
-        </tr>
-        <tr>
-            <td>Eggs</td>
-            <td>2.00</td>
-            <td>50</td>
-            <td>50</td>
-        </tr>
-        
+        {% endfor %}
     </table>
+    
+    <div class="form1">
+        <form action="/add-product" method="post">
+            <h3>Add product</h3>
+            <label for="name-input">Name</label><br>
+            <input id="name-input" type="text" name="name"><br>
+            <label for="price-input">Price</label><br>
+            <input id="price-input" type="text" name="price"><br>
+            <br>
+            <div style="text-align: right;">
+                <button type="submit" id="save-btn">Save</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
 </body>
 </html>
