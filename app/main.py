@@ -100,10 +100,12 @@ def getRequests():
 def addProduct():
 	name = request.form.get('name', "")
 	price = request.form.get('price', "")
+	daily_growth = request.form.get('daily_growth', "")
+	qtty = request.form.get('qtty', "")
 
-	if (name != "" and price != ""):
+	if (name != "" and price != "" and daily_growth != "" and qtty != ""):
 		db = connect_db()
-		db.execute('INSERT INTO products (name, price) VALUES (?, ?)', [name, price])
+		db.execute('INSERT INTO products (name, price, daily_growth, qtty) VALUES (?, ?, ?, ?)', [name, price, daily_growth, qtty])
 		db.commit()
 		return redirect("/")
 	else:
@@ -144,7 +146,6 @@ def newRequest():
 def home():
 	products = getProducts()
 	requests = getRequests()
-	print(requests)
 	return render_template('home.html', products=products, requests=requests)
 
 if __name__ == "__main__":
