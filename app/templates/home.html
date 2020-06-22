@@ -6,32 +6,56 @@
     <title>VillageSim</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <style>
-        .form1 {
+        .container1 {
             width: 500px;
             margin: 0 auto;
+        }
+        .form1 {
+            width: 500px;
+            margin: 20px auto;
+            border-radius: 5px;
+            background-color: #CCC;
+            padding: 10px;
         }
 
     </style>
 </head>
 <body>
-    <h1>Home</h1>
-    <h3>Stocks</h3>
-    <table>
-        <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Daily Growth</th>
-            <th>Quantity</th>
-        </tr>
-        {% for product in products %}
-        <tr>
-            <td>{{ product[1] }}</td>
-            <td>{{ product[2] }}</td>
-            <td>{{ product[3] }}</td>
-            <td>{{ product[4] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="container1">
+        <h1>Home</h1>
+        <h3>Stocks</h3>
+        <table class="table">
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Daily Growth</th>
+                <th>Quantity</th>
+            </tr>
+            {% for product in products %}
+            <tr>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>{{ product[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h3>Requests</h3>
+        <table class="table">
+            <tr>
+                <th>User</th>
+                <th>Product</th>
+                <th>Quantity</th>
+            </tr>
+            {% for request in requests %}
+            <tr>
+                <td>{{ request.user }}</td>
+                <td>{{ request.product }}</td>
+                <td>{{ request.qtty }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
     
     <div class="form1">
         <form action="/add-product" method="post">
@@ -40,6 +64,38 @@
             <input id="name-input" type="text" name="name"><br>
             <label for="price-input">Price</label><br>
             <input id="price-input" type="text" name="price"><br>
+            <br>
+            <div style="text-align: right;">
+                <button type="submit" id="save-btn">Save</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="form1">
+        <form action="/new-request" method="post">
+            <h3>Request</h3>
+            <label for="user-input">User</label><br>
+            <input id="user-input" type="text" name="user"><br>
+            <label for="product-input">Product</label><br>
+            <input id="product-input" type="text" name="product"><br>
+            <label for="qtty-input">Quantity</label><br>
+            <input id="qtty-input" type="text" name="qtty"><br>
+            <br>
+            <div style="text-align: right;">
+                <button type="submit" id="save-btn">Save</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="form1">
+        <form action="/add-user" method="post">
+            <h3>Add user</h3>
+            <label for="name-input">Name</label><br>
+            <input id="name-input" type="text" name="name"><br>
+            <label for="balance-input">Balance</label><br>
+            <input id="balance-input" type="text" name="balance"><br>
             <br>
             <div style="text-align: right;">
                 <button type="submit" id="save-btn">Save</button>
