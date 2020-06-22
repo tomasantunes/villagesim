@@ -73,6 +73,12 @@ def getProducts():
 	rows = c.fetchall()
 	return rows
 
+def getUsers():
+	db = connect_db()
+	c = db.execute('SELECT * FROM users')
+	rows = c.fetchall()
+	return rows
+
 def getRequests():
 	db = connect_db()
 	c = db.execute('SELECT * FROM requests')
@@ -146,7 +152,8 @@ def newRequest():
 def home():
 	products = getProducts()
 	requests = getRequests()
-	return render_template('home.html', products=products, requests=requests)
+	users = getUsers()
+	return render_template('home.html', products=products, requests=requests, users=users)
 
 if __name__ == "__main__":
 	init()
