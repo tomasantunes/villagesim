@@ -150,10 +150,18 @@ def newRequest():
 
 @app.route("/")
 def home():
+	return render_template('home.html')
+
+@app.route("/products")
+def products():
 	products = getProducts()
 	requests = getRequests()
+	return render_template('products.html', products=products, requests=requests)
+
+@app.route("/users")
+def users():
 	users = getUsers()
-	return render_template('home.html', products=products, requests=requests, users=users)
+	return render_template('users.html', users=users)
 
 if __name__ == "__main__":
 	init()

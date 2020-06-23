@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VillageSim</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <style>
+        .container1 {
+            width: 500px;
+            margin: 0 auto;
+        }
+        .form1 {
+            width: 500px;
+            margin: 20px auto;
+            border-radius: 5px;
+            background-color: #CCC;
+            padding: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">VillageSim</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/products">Products <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/stats">Stats</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/users">Users</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    <div class="container1">
+        <h1>Home</h1>
+        <h3>Stocks</h3>
+        <table class="table">
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Daily Growth</th>
+                <th>Quantity</th>
+            </tr>
+            {% for product in products %}
+            <tr>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>{{ product[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h3>Requests</h3>
+        <table class="table">
+            <tr>
+                <th>User</th>
+                <th>Product</th>
+                <th>Quantity</th>
+            </tr>
+            {% for request in requests %}
+            <tr>
+                <td>{{ request.user }}</td>
+                <td>{{ request.product }}</td>
+                <td>{{ request.qtty }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    <div class="form1">
+        <form action="/add-product" method="post">
+            <h3>Add product</h3>
+            <label for="name-input">Name</label><br>
+            <input id="name-input" type="text" name="name"><br>
+            <label for="price-input">Price</label><br>
+            <input id="price-input" type="text" name="price"><br>
+            <label for="dailygrowth-input">Daily Growth</label><br>
+            <input id="dailygrowth-input" type="text" name="daily_growth"><br>
+            <label for="qtty-input">Quantity</label><br>
+            <input id="qtty-input" type="text" name="qtty"><br>
+            <br>
+            <div style="text-align: right;">
+                <button type="submit" id="save-btn">Save</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="form1">
+        <form action="/new-request" method="post">
+            <h3>Request</h3>
+            <label for="user-input">User</label><br>
+            <input id="user-input" type="text" name="user"><br>
+            <label for="product-input">Product</label><br>
+            <input id="product-input" type="text" name="product"><br>
+            <label for="qtty-input">Quantity</label><br>
+            <input id="qtty-input" type="text" name="qtty"><br>
+            <br>
+            <div style="text-align: right;">
+                <button type="submit" id="save-btn">Save</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+</body>
+</html>
