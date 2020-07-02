@@ -100,6 +100,12 @@ def getRequests():
 	
 	return requests
 
+def getTop10Products():
+	db = connect_db()
+	c = db.execute('SELECT p.name, p.price, SUM(r.qtty) FROM products p, requests r WHERE p.id = r.product_id GROUP BY p.id ORDER BY SUM(r.qtty) DESC LIMIT 10')
+	rows = c.fetchall()
+	return rows
+
 
 
 @app.route("/add-product", methods=['POST'])
@@ -162,6 +168,11 @@ def products():
 def users():
 	users = getUsers()
 	return render_template('users.html', users=users)
+
+@app.route("/stats")
+def stats():
+	top10products = getTop10Products()
+	return render_template('stats.html', top10products=top10products)
 
 if __name__ == "__main__":
 	init()
