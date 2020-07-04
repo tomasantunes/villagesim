@@ -37,48 +37,31 @@
             <li class="nav-item">
               <a class="nav-link" href="/stats">Stats</a>
             </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="/users">Users <span class="sr-only">(current)</span></a>
-            </li>
             <li class="nav-item">
-                <a class="nav-link" href="/logs">Logs</a>
+              <a class="nav-link" href="/users">Users</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/logs">Logs <span class="sr-only">(current)</span></a>
             </li>
           </ul>
         </div>
       </nav>
     <div class="container1">
-        <h1>Home</h1>
-
-        <h3>Users</h3>
+        <h3>Logs</h3>
         <table class="table">
             <tr>
-                <th>User ID</th>
-                <th>Name</th>
-                <th>Balance</th>
+                <th>Date</th>
+                <th>User</th>
+                <th>Entry</th>
             </tr>
-            {% for user in users %}
+            {% for entry in log %}
             <tr>
-                <td>{{ user[0] }}</td>
-                <td>{{ user[1] }}</td>
-                <td>{{ user[2] }}</td>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.user }}</td>
+                <td>{{ entry.content }}</td>
             </tr>
             {% endfor %}
         </table>
-    </div>
-
-    <div class="form1">
-        <form action="/add-user" method="post">
-            <h3>Add user</h3>
-            <label for="name-input">Name</label><br>
-            <input id="name-input" type="text" name="name"><br>
-            <label for="balance-input">Balance</label><br>
-            <input id="balance-input" type="text" name="balance"><br>
-            <br>
-            <div style="text-align: right;">
-                <button type="submit" id="save-btn">Save</button>
-            </div>
-
-        </form>
     </div>
 
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>

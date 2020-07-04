@@ -43,6 +43,15 @@ def init():
 
 	c.execute(sql_requests_table)
 
+	sql_log_table = """ CREATE TABLE IF NOT EXISTS log (
+							id integer PRIMARY KEY,
+							user_id integer,
+							date text,
+							content text
+						); """
+
+	c.execute(sql_log_table)
+
 def getUserID(user):
 	db = connect_db()
 	c = db.execute('SELECT id FROM users WHERE name = ?', (user,))
@@ -105,8 +114,6 @@ def getTop10Products():
 	c = db.execute('SELECT p.name, p.price, SUM(r.qtty) FROM products p, requests r WHERE p.id = r.product_id GROUP BY p.id ORDER BY SUM(r.qtty) DESC LIMIT 10')
 	rows = c.fetchall()
 	return rows
-
-
 
 @app.route("/add-product", methods=['POST'])
 def addProduct():
@@ -173,6 +180,10 @@ def users():
 def stats():
 	top10products = getTop10Products()
 	return render_template('stats.html', top10products=top10products)
+
+@app.route("/logs")
+def logs():
+	return render_template('logs.html')
 
 if __name__ == "__main__":
 	init()
