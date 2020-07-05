@@ -1,6 +1,6 @@
 from flask import Flask, flash, redirect, render_template, request, session, abort
 import sqlite3
-import datetime
+from datetime import datetime
 import os
 
 def connect_db():
@@ -43,14 +43,14 @@ def init():
 
 	c.execute(sql_requests_table)
 
-	sql_log_table = """ CREATE TABLE IF NOT EXISTS log (
+	sql_logs_table = """ CREATE TABLE IF NOT EXISTS logs (
 							id integer PRIMARY KEY,
 							user_id integer,
 							date text,
 							content text
 						); """
 
-	c.execute(sql_log_table)
+	c.execute(sql_logs_table)
 
 def getUserID(user):
 	db = connect_db()
@@ -85,6 +85,12 @@ def getProducts():
 def getUsers():
 	db = connect_db()
 	c = db.execute('SELECT * FROM users')
+	rows = c.fetchall()
+	return rows
+
+def getLogs():
+	db = connect_db()
+	c = db.execute('SELECT * FROM logs')
 	rows = c.fetchall()
 	return rows
 
@@ -155,7 +161,26 @@ def newRequest():
 		user_id = getUserID(user)
 		product_id = getProductID(product)
 
-		db.execute('INSERT INTO requests (user_id, product_id, qtty) VALUES (?, ?, ?)', [user_id, product_id, qtty])
+		db.execute('INSERT INTO requests (user_id, date, entry) VALUES (?, ?, ?)', [user_id, date, entry])
+		db.commit()
+		return redirect("/")
+	else:
+		return "Submission Invalid"
+
+@app.route("/add-log-entry", methods=['POST'])
+def addLogEntry():
+	user = request.form.get('user', "")
+	entry = request.form.get('entry', "")
+
+	now = datetime.now()
+	date = now.strftime("%d/%m/%Y %H:%M:%S")
+
+	if (user != "" and entry != ""):
+		db = connect_db()
+		
+		user_id = getUserID(user)
+
+		db.execute('INSERT INTO logs (user_id, date, content) VALUES (?, ?, ?)', [user_id, date, entry])
 		db.commit()
 		return redirect("/")
 	else:
@@ -183,7 +208,8 @@ def stats():
 
 @app.route("/logs")
 def logs():
-	return render_template('logs.html')
+	logs = getLogs()
+	return render_template('logs.html', logs=logs)
 
 if __name__ == "__main__":
 	init()

@@ -54,15 +54,29 @@
                 <th>User</th>
                 <th>Entry</th>
             </tr>
-            {% for entry in log %}
+            {% for entry in logs %}
             <tr>
-                <td>{{ entry.date }}</td>
-                <td>{{ entry.user }}</td>
-                <td>{{ entry.content }}</td>
+                <td>{{ entry[2] }}</td>
+                <td>{{ entry[1] }}</td>
+                <td>{{ entry[3] }}</td>
             </tr>
             {% endfor %}
         </table>
     </div>
+    <div class="form1">
+      <form action="/add-log-entry" method="post">
+          <h3>Add Entry</h3>
+          <label for="user-input">User</label><br>
+          <input id="user-input" type="text" name="user"><br>
+          <label for="entry-input">Entry</label><br>
+          <input id="entry-input" type="text" name="entry"><br>
+          <br>
+          <div style="text-align: right;">
+            <button type="submit" id="save-btn">Save</button>
+          </div>
+
+      </form>
+  </div>
 
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
