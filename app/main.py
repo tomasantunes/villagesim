@@ -1,6 +1,6 @@
 from flask import Flask, flash, redirect, render_template, request, session, abort
 import sqlite3
-import datetime
+from datetime import datetime
 import os
 
 def connect_db():
@@ -29,7 +29,8 @@ def init():
 	sql_users_table = """ CREATE TABLE IF NOT EXISTS users (
 							id integer PRIMARY KEY,
 							name text,
-							balance text
+							balance numeric,
+							total_spent numeric DEFAULT 0
 						); """
 
 	c.execute(sql_users_table)
@@ -40,21 +41,40 @@ def init():
 							product_id integer,
 							qtty numeric,
 							recurrent integer
+							date text,
+							total numeric
 						); """
 
 	c.execute(sql_requests_table)
 
+	sql_logs_table = """ CREATE TABLE IF NOT EXISTS logs (
+							id integer PRIMARY KEY,
+							user_id integer,
+							date text,
+							content text
+						); """
+
+	c.execute(sql_logs_table)
+
 def getUserID(user):
 	db = connect_db()
 	c = db.execute('SELECT id FROM users WHERE name = ?', (user,))
-	user_id = c.fetchall()[0][0]
-	return user_id
+	rows = c.fetchall()
+	if len(rows) > 0:
+		user_id = rows[0][0]
+		return user_id
+	else:
+		return False
 
-def getProductID(product):
+def getProduct(product):
 	db = connect_db()
-	c = db.execute('SELECT id FROM products WHERE name = ?', (product,))
-	product_id = c.fetchall()[0][0]
-	return product_id
+	c = db.execute('SELECT * FROM products WHERE name = ?', (product,))
+	rows = c.fetchall()
+	if len(rows) > 0:
+		product = rows[0]
+		return product
+	else:
+		return False
 
 def getUserByID(id):
 	db = connect_db()
@@ -77,6 +97,12 @@ def getProducts():
 def getUsers():
 	db = connect_db()
 	c = db.execute('SELECT * FROM users')
+	rows = c.fetchall()
+	return rows
+
+def getLogs():
+	db = connect_db()
+	c = db.execute('SELECT * FROM logs')
 	rows = c.fetchall()
 	return rows
 
@@ -108,7 +134,11 @@ def getTop10Products():
 	rows = c.fetchall()
 	return rows
 
-
+def getTop10Users():
+	db = connect_db()
+	c = db.execute('SELECT name, total_spent FROM users ORDER BY total_spent DESC LIMIT 10')
+	rows = c.fetchall()
+	return rows
 
 @app.route("/add-product", methods=['POST'])
 def addProduct():
@@ -147,13 +177,41 @@ def newRequest():
 
 	recurrent = True if recurrent == "on" else False
 
-	if (user != "" and product != "" and qtty != ""):
+	user_id = getUserID(user)
+	product = getProduct(product)
+
+	if (user_id != False and product != False and qtty != ""):
+		db = connect_db()
+
+		now = datetime.now()
+		date = now.strftime("%d/%m/%Y %H:%M:%S")
+		print(product)
+		total = int(qtty) * product[2]
+		print(total)
+
+		db.execute('INSERT INTO requests (user_id, product_id, qtty, date, total) VALUES (?, ?, ?, ?, ?)', [user_id, product[0], qtty, date, total])
+		db.commit()
+		
+		db.execute('UPDATE users SET total_spent = total_spent + ? WHERE id = ?', (total, user_id))
+		db.commit()
+		return redirect("/")
+	else:
+		return "Submission Invalid"
+
+@app.route("/add-log-entry", methods=['POST'])
+def addLogEntry():
+	user = request.form.get('user', "")
+	entry = request.form.get('entry', "")
+
+	now = datetime.now()
+	date = now.strftime("%d/%m/%Y %H:%M:%S")
+
+	if (user != "" and entry != ""):
 		db = connect_db()
 		
 		user_id = getUserID(user)
-		product_id = getProductID(product)
 
-		db.execute('INSERT INTO requests (user_id, product_id, qtty, recurrent) VALUES (?, ?, ?, ?)', [user_id, product_id, qtty, recurrent])
+		db.execute('INSERT INTO logs (user_id, date, content) VALUES (?, ?, ?)', [user_id, date, entry])
 		db.commit()
 		return redirect("/")
 	else:
@@ -177,7 +235,13 @@ def users():
 @app.route("/stats")
 def stats():
 	top10products = getTop10Products()
-	return render_template('stats.html', top10products=top10products)
+	top10users = getTop10Users()
+	return render_template('stats.html', top10products=top10products, top10users=top10users)
+
+@app.route("/logs")
+def logs():
+	logs = getLogs()
+	return render_template('logs.html', logs=logs)
 
 if __name__ == "__main__":
 	init()
