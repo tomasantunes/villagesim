@@ -55,14 +55,14 @@
                 <th>User ID</th>
                 <th>Name</th>
                 <th>Balance</th>
-                <th>Total Spent</th>
+                <th>Monthly Expense</th>
             </tr>
             {% for user in users %}
             <tr>
-                <td>{{ user[0] }}</td>
-                <td>{{ user[1] }}</td>
-                <td>{{ user[2] }}</td>
-                <td>{{ user[3] }}</td>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.balance }}</td>
+                <td>{{ user.monthly_expense }}</td>
             </tr>
             {% endfor %}
         </table>

@@ -40,7 +40,7 @@ def init():
 							user_id integer,
 							product_id integer,
 							qtty numeric,
-							recurrent integer
+							recurrent integer,
 							date text,
 							total numeric
 						); """
@@ -98,7 +98,22 @@ def getUsers():
 	db = connect_db()
 	c = db.execute('SELECT * FROM users')
 	rows = c.fetchall()
-	return rows
+	users = []
+
+	for row in rows:
+		print(row[0])
+		c = db.execute('SELECT total FROM requests WHERE user_id = ? AND recurrent = 1', (row[0],))
+		total = c.fetchall()
+		print(total)
+		user = {
+			'id': row[0],
+			'user': row[1],
+			'balance' : row[2],
+			'monthly_expense' : total[0][0] * 30,
+		}
+
+		users.append(user)
+	return users
 
 def getLogs():
 	db = connect_db()
@@ -121,7 +136,9 @@ def getRequests():
 			'user': user[1],
 			'product' : product[1],
 			'qtty' : row[3],
-			'recurrent' : "true" if row[1] == 1 else "false",
+			'date' : row[5],
+			'total' : row[6],
+			'recurrent' : "true" if row[4] == 1 else "false",
 		}
 
 		requests.append(request)
@@ -185,15 +202,14 @@ def newRequest():
 
 		now = datetime.now()
 		date = now.strftime("%d/%m/%Y %H:%M:%S")
-		print(product)
 		total = int(qtty) * product[2]
-		print(total)
 
-		db.execute('INSERT INTO requests (user_id, product_id, qtty, date, total) VALUES (?, ?, ?, ?, ?)', [user_id, product[0], qtty, date, total])
+		db.execute('INSERT INTO requests (user_id, product_id, qtty, recurrent, date, total) VALUES (?, ?, ?, ?, ?, ?)', [user_id, product[0], qtty, recurrent, date, total])
 		db.commit()
-		
-		db.execute('UPDATE users SET total_spent = total_spent + ? WHERE id = ?', (total, user_id))
-		db.commit()
+		if not recurrent:
+			db.execute('UPDATE users SET total_spent = total_spent + ? WHERE id = ?', (total, user_id))
+			db.commit()
+
 		return redirect("/")
 	else:
 		return "Submission Invalid"
