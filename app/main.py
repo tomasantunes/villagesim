@@ -38,7 +38,8 @@ def init():
 							id integer PRIMARY KEY,
 							user_id integer,
 							product_id integer,
-							qtty numeric
+							qtty numeric,
+							recurrent integer
 						); """
 
 	c.execute(sql_requests_table)
@@ -94,6 +95,7 @@ def getRequests():
 			'user': user[1],
 			'product' : product[1],
 			'qtty' : row[3],
+			'recurrent' : "true" if row[1] == 1 else "false",
 		}
 
 		requests.append(request)
@@ -141,6 +143,9 @@ def newRequest():
 	user = request.form.get('user', "")
 	product = request.form.get('product', "")
 	qtty = request.form.get('qtty', "")
+	recurrent = request.form.get('recurrent', "")
+
+	recurrent = True if recurrent == "on" else False
 
 	if (user != "" and product != "" and qtty != ""):
 		db = connect_db()
@@ -148,7 +153,7 @@ def newRequest():
 		user_id = getUserID(user)
 		product_id = getProductID(product)
 
-		db.execute('INSERT INTO requests (user_id, product_id, qtty) VALUES (?, ?, ?)', [user_id, product_id, qtty])
+		db.execute('INSERT INTO requests (user_id, product_id, qtty, recurrent) VALUES (?, ?, ?, ?)', [user_id, product_id, qtty, recurrent])
 		db.commit()
 		return redirect("/")
 	else:

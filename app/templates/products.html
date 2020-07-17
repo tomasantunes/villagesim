@@ -68,12 +68,14 @@
                 <th>User</th>
                 <th>Product</th>
                 <th>Quantity</th>
+                <th>Recurrent</th>
             </tr>
             {% for request in requests %}
             <tr>
                 <td>{{ request.user }}</td>
                 <td>{{ request.product }}</td>
                 <td>{{ request.qtty }}</td>
+                <td>{{ request.recurrent }}</td>
             </tr>
             {% endfor %}
         </table>
@@ -107,6 +109,8 @@
             <input id="product-input" type="text" name="product"><br>
             <label for="qtty-input">Quantity</label><br>
             <input id="qtty-input" type="text" name="qtty"><br>
+            <label for="recurrent">Recurrent</label>
+            <input id="recurrent" type="checkbox" name="recurrent"><br>
             <br>
             <div style="text-align: right;">
                 <button type="submit" id="save-btn">Save</button>
