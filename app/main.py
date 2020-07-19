@@ -101,10 +101,8 @@ def getUsers():
 	users = []
 
 	for row in rows:
-		print(row[0])
 		c = db.execute('SELECT total FROM requests WHERE user_id = ? AND recurrent = 1', (row[0],))
 		total = c.fetchall()
-		print(total)
 		user = {
 			'id': row[0],
 			'user': row[1],
@@ -144,6 +142,12 @@ def getRequests():
 		requests.append(request)
 	
 	return requests
+
+def getBankMonthlyProfit():
+	db = connect_db()
+	c = db.execute('SELECT SUM(total) FROM requests WHERE recurrent = 1')
+	total = round(c.fetchall()[0][0], 2)
+	return total
 
 def getTop10Products():
 	db = connect_db()
@@ -237,11 +241,11 @@ def addLogEntry():
 def home():
 	return render_template('home.html')
 
-@app.route("/products")
+@app.route("/shop")
 def products():
 	products = getProducts()
 	requests = getRequests()
-	return render_template('products.html', products=products, requests=requests)
+	return render_template('shop.html', products=products, requests=requests)
 
 @app.route("/users")
 def users():
@@ -253,6 +257,14 @@ def stats():
 	top10products = getTop10Products()
 	top10users = getTop10Users()
 	return render_template('stats.html', top10products=top10products, top10users=top10users)
+
+@app.route("/bank")
+def bank():
+	monthly_profit = getBankMonthlyProfit()
+
+	# TODO: Add monthly expense and waste
+
+	return render_template('bank.html', monthly_profit=monthly_profit)
 
 @app.route("/logs")
 def logs():

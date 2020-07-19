@@ -40,46 +40,21 @@
             <li class="nav-item">
               <a class="nav-link" href="/users">Users</a>
             </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="/logs">Logs <span class="sr-only">(current)</span></a>
-            </li>
             <li class="nav-item">
-              <a class="nav-link" href="/bank">Bank</a>
+                <a class="nav-link" href="/logs">Logs</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/bank">Bank <span class="sr-only">(current)</span></a>
             </li>
           </ul>
         </div>
-      </nav>
+    </nav>
     <div class="container1">
-        <h3>Logs</h3>
-        <table class="table">
-            <tr>
-                <th>Date</th>
-                <th>User</th>
-                <th>Entry</th>
-            </tr>
-            {% for entry in logs %}
-            <tr>
-                <td>{{ entry[2] }}</td>
-                <td>{{ entry[1] }}</td>
-                <td>{{ entry[3] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    <div class="form1">
-      <form action="/add-log-entry" method="post">
-          <h3>Add Entry</h3>
-          <label for="user-input">User</label><br>
-          <input id="user-input" type="text" name="user"><br>
-          <label for="entry-input">Entry</label><br>
-          <input id="entry-input" type="text" name="entry"><br>
-          <br>
-          <div style="text-align: right;">
-            <button type="submit" id="save-btn">Save</button>
-          </div>
+        <h1>Bank</h1>
 
-      </form>
-  </div>
+        <h3>Monthly Profit</h3>
+        <p>{{ monthly_profit }}</p>
+    </div>
 
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
