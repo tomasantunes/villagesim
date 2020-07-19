@@ -85,11 +85,11 @@ def generateUsers():
 			name = random.choice(open('static/usernames.txt').readlines())
 			r = random.random()
 			if (r < 0.01):
-				balance = round(random.uniform(2.50, 100000.00), 1)
+				balance = round(random.uniform(2.50, 100000.00), 2)
 			elif (r < 0.10):
-				balance = round(random.uniform(2.50, 10000.00), 1)
+				balance = round(random.uniform(2.50, 10000.00), 2)
 			else:
-				balance = round(random.uniform(2.50, 1000.00), 1)
+				balance = round(random.uniform(2.50, 1000.00), 2)
 			db = connect_db()
 			db.execute('INSERT INTO users (name, balance) VALUES (?, ?)', [name, balance])
 			db.commit()
@@ -143,7 +143,7 @@ def getUsers():
 		}
 
 		if len(total) > 0:
-			user['monthly_expense'] = total[0][0] * 30
+			user['monthly_expense'] = round(total[0][0] * 30, 2)
 
 		users.append(user)
 	return users
@@ -176,7 +176,7 @@ def getRequests():
 			'product' : product[1],
 			'qtty' : row[3],
 			'date' : row[5],
-			'total' : row[6],
+			'total' : round(row[6], 2),
 			'recurrent' : "true" if row[4] == 1 else "false",
 		}
 
@@ -251,7 +251,7 @@ def newRequest():
 
 		now = datetime.now()
 		date = now.strftime("%d/%m/%Y %H:%M:%S")
-		total = int(qtty) * product[2]
+		total = round(int(qtty) * product[2], 2)
 
 		db.execute('INSERT INTO requests (user_id, product_id, qtty, recurrent, date, total) VALUES (?, ?, ?, ?, ?, ?)', [user_id, product[0], qtty, recurrent, date, total])
 		db.commit()
@@ -271,22 +271,22 @@ def generateRequests():
 		products = getProducts()
 		users = getUsers()
 
-		product = random.choice(products)
-		user = random.choice(users)
-
-		user_id = user['id']
-		product_id = product[0]
-		
 		for i in range(0, int(qtty)):
 			qtty = random.randint(1, 100)
 			recurrent = True if random.random() < 0.75 else False
+
+			product = random.choice(products)
+			user = random.choice(users)
+
+			user_id = user['id']
+			product_id = product[0]
 
 			if (user_id != False and product != False and qtty != ""):
 				db = connect_db()
 
 				now = datetime.now()
 				date = now.strftime("%d/%m/%Y %H:%M:%S")
-				total = int(qtty) * product[2]
+				total = round(int(qtty) * product[2], 2)
 
 				db.execute('INSERT INTO requests (user_id, product_id, qtty, recurrent, date, total) VALUES (?, ?, ?, ?, ?, ?)', [user_id, product_id, qtty, recurrent, date, total])
 				db.commit()
