@@ -83,7 +83,14 @@ def generateUsers():
 	if (qtty != ""):
 		for i in range(0, int(qtty)):
 			name = random.choice(open('static/usernames.txt').readlines())
-			balance = round(random.uniform(2.50, 1000.00), 1)
+			r = random.random()
+			print(r)
+			if (r < 0.01):
+				balance = round(random.uniform(2.50, 100000.00), 1)
+			elif (r < 0.10):
+				balance = round(random.uniform(2.50, 10000.00), 1)
+			else:
+				balance = round(random.uniform(2.50, 1000.00), 1)
 			db = connect_db()
 			db.execute('INSERT INTO users (name, balance) VALUES (?, ?)', [name, balance])
 			db.commit()
