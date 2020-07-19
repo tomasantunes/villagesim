@@ -2,6 +2,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 import sqlite3
 from datetime import datetime
 import os
+import random
 
 def connect_db():
 	return sqlite3.connect("villagesim.db")
@@ -74,6 +75,22 @@ def getUserID(user):
 		return user_id
 	else:
 		return False
+
+@app.route("/generate-users", methods=['POST'])
+def generateUsers():
+	qtty = request.form.get('qtty', "")
+
+	if (qtty != ""):
+		for i in range(0, int(qtty)):
+			name = random.choice(open('static/usernames.txt').readlines())
+			balance = round(random.uniform(2.50, 1000.00), 1)
+			db = connect_db()
+			db.execute('INSERT INTO users (name, balance) VALUES (?, ?)', [name, balance])
+			db.commit()
+
+		return redirect("/users")
+	else:
+		return "Submission Invalid"
 
 def getProduct(product):
 	db = connect_db()
@@ -164,7 +181,11 @@ def getRequests():
 def getBankMonthlyIncome():
 	db = connect_db()
 	c = db.execute('SELECT SUM(total) FROM requests WHERE recurrent = 1')
-	income = round(c.fetchall()[0][0], 2)
+	income = c.fetchall()[0][0]
+	if income == None:
+		income = 0
+	else:
+		income = round(income, 2)
 	return income
 
 def getTop10Products():
@@ -190,7 +211,7 @@ def addProduct():
 		db = connect_db()
 		db.execute('INSERT INTO products (name, price, daily_growth, qtty) VALUES (?, ?, ?, ?)', [name, price, daily_growth, qtty])
 		db.commit()
-		return redirect("/")
+		return redirect("/shop")
 	else:
 		return "Submission Invalid"
 
@@ -203,7 +224,7 @@ def addUser():
 		db = connect_db()
 		db.execute('INSERT INTO users (name, balance) VALUES (?, ?)', [name, balance])
 		db.commit()
-		return redirect("/")
+		return redirect("/users")
 	else:
 		return "Submission Invalid"
 
@@ -232,7 +253,7 @@ def newRequest():
 			db.execute('UPDATE users SET total_spent = total_spent + ? WHERE id = ?', (total, user_id))
 			db.commit()
 
-		return redirect("/")
+		return redirect("/shop")
 	else:
 		return "Submission Invalid"
 
@@ -251,7 +272,7 @@ def addLogEntry():
 
 		db.execute('INSERT INTO logs (user_id, date, content) VALUES (?, ?, ?)', [user_id, date, entry])
 		db.commit()
-		return redirect("/")
+		return redirect("/logs")
 	else:
 		return "Submission Invalid"
 
@@ -268,7 +289,7 @@ def addJob():
 
 		db.execute('INSERT INTO jobs (title, salary, user_id) VALUES (?, ?, ?)', [title, salary, user_id])
 		db.commit()
-		return redirect("/")
+		return redirect("/human-resources")
 	else:
 		return "Submission Invalid"
 

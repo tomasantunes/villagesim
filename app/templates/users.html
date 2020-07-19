@@ -87,6 +87,18 @@
         </form>
     </div>
 
+    <div class="form1">
+      <form action="/generate-users" method="post">
+          <h3>Generate Users</h3>
+          <label for="qtty-input">Quantity</label><br>
+          <input id="qtty-input" type="text" name="qtty"><br>
+          <br>
+          <div style="text-align: right;">
+              <button type="submit" id="save-btn">OK</button>
+          </div>
+      </form>
+  </div>
+
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
 </body>
