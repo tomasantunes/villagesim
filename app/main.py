@@ -143,11 +143,11 @@ def getRequests():
 	
 	return requests
 
-def getBankMonthlyProfit():
+def getBankMonthlyIncome():
 	db = connect_db()
 	c = db.execute('SELECT SUM(total) FROM requests WHERE recurrent = 1')
-	total = round(c.fetchall()[0][0], 2)
-	return total
+	income = round(c.fetchall()[0][0], 2)
+	return income
 
 def getTop10Products():
 	db = connect_db()
@@ -260,11 +260,11 @@ def stats():
 
 @app.route("/bank")
 def bank():
-	monthly_profit = getBankMonthlyProfit()
+	monthly_income = getBankMonthlyIncome()
 
 	# TODO: Add monthly expense and waste
 
-	return render_template('bank.html', monthly_profit=monthly_profit)
+	return render_template('bank.html', monthly_income=monthly_income)
 
 @app.route("/logs")
 def logs():
