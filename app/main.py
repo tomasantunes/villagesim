@@ -35,6 +35,15 @@ def init():
 
 	c.execute(sql_users_table)
 
+	sql_jobs_table = """ CREATE TABLE IF NOT EXISTS jobs (
+							id integer PRIMARY KEY,
+							user_id integer,
+							title text,
+							salary numeric
+						); """
+
+	c.execute(sql_jobs_table)
+
 	sql_requests_table = """ CREATE TABLE IF NOT EXISTS requests (
 							id integer PRIMARY KEY,
 							user_id integer,
@@ -105,10 +114,13 @@ def getUsers():
 		total = c.fetchall()
 		user = {
 			'id': row[0],
-			'user': row[1],
+			'name': row[1],
 			'balance' : row[2],
-			'monthly_expense' : total[0][0] * 30,
+			'monthly_expense' : 0,
 		}
+
+		if len(total) > 0:
+			user['monthly_expense'] = total[0][0] * 30
 
 		users.append(user)
 	return users
@@ -116,6 +128,12 @@ def getUsers():
 def getLogs():
 	db = connect_db()
 	c = db.execute('SELECT * FROM logs')
+	rows = c.fetchall()
+	return rows
+
+def getJobs():
+	db = connect_db()
+	c = db.execute('SELECT * FROM jobs')
 	rows = c.fetchall()
 	return rows
 
@@ -237,6 +255,23 @@ def addLogEntry():
 	else:
 		return "Submission Invalid"
 
+@app.route("/add-job", methods=['POST'])
+def addJob():
+	title = request.form.get('title', "")
+	user = request.form.get('user', "")
+	salary = request.form.get('salary', "")
+
+	if (user != "" and title != "" and salary != ""):
+		db = connect_db()
+		
+		user_id = getUserID(user)
+
+		db.execute('INSERT INTO jobs (title, salary, user_id) VALUES (?, ?, ?)', [title, salary, user_id])
+		db.commit()
+		return redirect("/")
+	else:
+		return "Submission Invalid"
+
 @app.route("/")
 def home():
 	return render_template('home.html')
@@ -265,6 +300,11 @@ def bank():
 	# TODO: Add monthly expense and waste
 
 	return render_template('bank.html', monthly_income=monthly_income)
+
+@app.route("/human-resources")
+def humanResources():
+	jobs = getJobs()
+	return render_template('human-resources.html', jobs=jobs)
 
 @app.route("/logs")
 def logs():
