@@ -84,7 +84,6 @@ def generateUsers():
 		for i in range(0, int(qtty)):
 			name = random.choice(open('static/usernames.txt').readlines())
 			r = random.random()
-			print(r)
 			if (r < 0.01):
 				balance = round(random.uniform(2.50, 100000.00), 1)
 			elif (r < 0.10):
@@ -259,6 +258,41 @@ def newRequest():
 		if not recurrent:
 			db.execute('UPDATE users SET total_spent = total_spent + ? WHERE id = ?', (total, user_id))
 			db.commit()
+
+		return redirect("/shop")
+	else:
+		return "Submission Invalid"
+
+@app.route("/generate-requests", methods=['POST'])
+def generateRequests():
+	qtty = request.form.get('qtty', "")
+
+	if (qtty != ""):
+		products = getProducts()
+		users = getUsers()
+
+		product = random.choice(products)
+		user = random.choice(users)
+
+		user_id = user['id']
+		product_id = product[0]
+		
+		for i in range(0, int(qtty)):
+			qtty = random.randint(1, 100)
+			recurrent = True if random.random() < 0.75 else False
+
+			if (user_id != False and product != False and qtty != ""):
+				db = connect_db()
+
+				now = datetime.now()
+				date = now.strftime("%d/%m/%Y %H:%M:%S")
+				total = int(qtty) * product[2]
+
+				db.execute('INSERT INTO requests (user_id, product_id, qtty, recurrent, date, total) VALUES (?, ?, ?, ?, ?, ?)', [user_id, product_id, qtty, recurrent, date, total])
+				db.commit()
+				if not recurrent:
+					db.execute('UPDATE users SET total_spent = total_spent + ? WHERE id = ?', (total, user_id))
+					db.commit()
 
 		return redirect("/shop")
 	else:
