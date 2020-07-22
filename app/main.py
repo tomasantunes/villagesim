@@ -31,7 +31,8 @@ def init():
 							id integer PRIMARY KEY,
 							name text,
 							balance numeric,
-							total_spent numeric DEFAULT 0
+							total_spent numeric DEFAULT 0,
+							monthly_income numeric DEFAULT 0
 						); """
 
 	c.execute(sql_users_table)
@@ -135,11 +136,14 @@ def getUsers():
 	for row in rows:
 		c = db.execute('SELECT total FROM requests WHERE user_id = ? AND recurrent = 1', (row[0],))
 		total = c.fetchall()
+		print(row[4])
 		user = {
 			'id': row[0],
 			'name': row[1],
 			'balance' : row[2],
 			'monthly_expense' : 0,
+			'total_spent' : row[3],
+			'monthly_income' : row[4],
 		}
 
 		if len(total) > 0:
@@ -329,6 +333,8 @@ def addJob():
 		user_id = getUserID(user)
 
 		db.execute('INSERT INTO jobs (title, salary, user_id) VALUES (?, ?, ?)', [title, salary, user_id])
+		db.commit()
+		db.execute('UPDATE users SET monthly_income = ? WHERE id = ?', (salary, user_id))
 		db.commit()
 		return redirect("/human-resources")
 	else:

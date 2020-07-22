@@ -60,14 +60,18 @@
                 <th>User ID</th>
                 <th>Name</th>
                 <th>Balance</th>
+                <th>Total Spent</th>
                 <th>Monthly Expense</th>
+                <th>Monthly Income</th>
             </tr>
             {% for user in users %}
             <tr>
                 <td>{{ user.id }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.balance }}</td>
+                <td>{{ user.total_spent }}</td>
                 <td>{{ user.monthly_expense }}</td>
+                <td>{{ user.monthly_income }}</td>
             </tr>
             {% endfor %}
         </table>
