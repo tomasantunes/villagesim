@@ -80,10 +80,11 @@ def getUserID(user):
 @app.route("/generate-users", methods=['POST'])
 def generateUsers():
 	qtty = request.form.get('qtty', "")
-
+	print(qtty)
+	print("x1")
 	if (qtty != ""):
 		for i in range(0, int(qtty)):
-			name = random.choice(open('static/usernames.txt').readlines())
+			name = random.choice(open('static/usernames.txt', encoding="utf-8").readlines())
 			r = random.random()
 			if (r < 0.01):
 				balance = round(random.uniform(2.50, 100000.00), 2)
@@ -94,7 +95,7 @@ def generateUsers():
 			db = connect_db()
 			db.execute('INSERT INTO users (name, balance) VALUES (?, ?)', [name, balance])
 			db.commit()
-
+		print("x2")
 		return redirect("/users")
 	else:
 		return "Submission Invalid"
@@ -142,7 +143,7 @@ def getUsers():
 			'name': row[1],
 			'balance' : row[2],
 			'monthly_expense' : 0,
-			'total_spent' : row[3],
+			'total_spent' : round(row[3], 2),
 			'monthly_income' : row[4],
 		}
 
