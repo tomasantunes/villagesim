@@ -148,7 +148,10 @@ def getUsers():
 		}
 
 		if len(total) > 0:
-			user['monthly_expense'] = round(total[0][0] * 30, 2)
+			t = 0
+			for i in total:
+				t += i[0]
+			user['monthly_expense'] = round(t, 2)
 
 		users.append(user)
 	return users
